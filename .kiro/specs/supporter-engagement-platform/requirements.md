@@ -135,3 +135,15 @@ The Supporter Engagement Platform is an AI-powered digital experience that bridg
 3. THE Impact_Tracker SHALL display donation streaks and research impact stories in mobile-friendly formats with easy navigation
 4. THE system SHALL maintain full functionality across iOS Safari, Android Chrome, and desktop browsers with consistent data synchronization
 5. THE platform SHALL support offline viewing of previously loaded profile data and impact stories while queuing updates for when connectivity returns
+
+### Requirement 11: Multi-Modal Accessibility and Content Quality
+
+**User Story:** As a person with diverse accessibility needs seeking cancer information, I want to interact with the system through multiple channels and receive accurate, evidence-based information, so that I can access support regardless of my abilities and trust the guidance I receive.
+
+#### Acceptance Criteria
+
+1. THE system SHALL support text-based conversations through web and mobile interfaces with voice interaction capabilities for hands-free access
+2. WHEN visual content is presented, THE system SHALL provide alternative text descriptions for screen readers and offer content in multiple formats (text, audio, visual)
+3. THE system SHALL only surface content that has been medically reviewed and approved by CRUK experts with appropriate disclaimers about consulting healthcare professionals
+4. WHEN providing medical information, THE system SHALL flag potentially harmful queries and redirect to emergency services when appropriate
+5. THE system SHALL maintain content freshness by regularly updating its knowledge base with new CRUK publications and research findings
