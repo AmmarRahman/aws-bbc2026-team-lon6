@@ -2,148 +2,186 @@
 
 ## Introduction
 
-The Supporter Engagement Platform is an AI-powered digital experience that bridges Cancer Research UK's current fragmented systems and their future Engage Transformation Programme vision. By delivering three interconnected features—a unified supporter profile dashboard, intelligent personalization onboarding, and transparent donation impact tracking—this platform demonstrates how AI can create immediate value for supporters while accelerating transformation goals. The solution addresses the hackathon's core challenge: delivering personalized, accessible experiences today that inform and accelerate the longer-term unified cancer care platform vision.
+The Supporter Engagement Platform is an AI-powered digital front door for Cancer Research UK that delivers personalized supporter experiences and information seeking capabilities. The system uses conversational AI to understand user intent, maintain user context, and guide supporters through personalized journeys that inspire deeper engagement with CRUK's mission. The platform integrates with existing data sources through MCP servers to provide real-time, contextual information while maintaining GDPR compliance and data security.
 
 ## Glossary
 
-- **Supporter_Profile**: The unified dashboard displaying a supporter's complete CRUK engagement history using existing person-schema data structures
-- **Onboarding_Engine**: The AI system that collects preferences and personalizes experiences while ensuring GDPR compliance for special category data
-- **Impact_Tracker**: The system that maps donations to research outcomes using existing donation-schema structures and maintains donation streaks
-- **Personalization_Engine**: The AI system that delivers tailored content based on supporter preferences, cancer interests, and engagement patterns
-- **Consent_Manager**: The system managing explicit consent for processing special category personal data related to health information
-- **Engagement_Analytics**: The system tracking supporter behavior patterns to optimize retention and inform transformation priorities
-- **Schema_Integration**: The component that leverages existing CRUK data schemas (person-schema-1-1-4, donation-schema, fundraising-page-schema) for seamless integration
+- **Personalization_Engine**: The AI system responsible for analyzing user context and delivering personalized content and recommendations
+- **Information_Seeker**: A user who accesses the platform primarily to find cancer-related information from Cancer Research UK's published sources
+- **Supporter**: A user who engages or will engage with CRUK through donations, fundraising, volunteering, or other activities (includes both existing and potential supporters)
+- **User_Profile**: Structured data containing user attributes including donation history, event participation, and personal context
+- **MCP_Server**: Model Context Protocol server that provides access to backend data sources and APIs
+- **Personalisation_Flow**: The guided journey that collects user context and delivers personalized content
+- **Dashboard**: The personalized landing page displaying user-specific information and recommendations
+- **Intent_Detection**: The system's ability to determine whether a user wants personalization or information seeking
+- **User_Context**: Historical and current information about a user including interactions, preferences, and engagement history
+- **Call_To_Action**: A recommendation for the user to take a specific action (donate, volunteer, fundraise)
 
 ## Requirements
 
-### Requirement 1: Intelligent Information Access and Personalization
+### Requirement 1: User Authentication and Profile Access
 
-**User Story:** As a person affected by cancer, I want to receive personalized, relevant information through AI that understands my specific situation, so that I can make informed decisions and feel supported throughout my journey.
-
-#### Acceptance Criteria
-
-1. WHEN a user provides their cancer type and treatment stage, THE Personalization_Engine SHALL deliver tailored information relevant to their specific circumstances
-2. WHEN a user has limited health literacy, THE system SHALL automatically adjust language complexity and provide simplified explanations
-3. WHEN a user requests information in a different language, THE system SHALL provide multilingual support for key cancer information
-4. WHEN a user asks a question, THE system SHALL surface the most relevant resources from CRUK's information library within 3 seconds
-5. WHERE appropriate consent is provided, THE Personalization_Engine SHALL process special category personal data to enhance information relevance
-
-### Requirement 2: Schema-Compliant Supporter Profile Dashboard
-
-**User Story:** As a CRUK supporter, I want to see all my engagement activities in one personalized dashboard that integrates with existing CRUK systems, so that I feel recognized for my contributions and can easily continue my support journey.
+**User Story:** As a user, I want to log in to the platform, so that I can access my personalized experience based on my engagement level with CRUK.
 
 #### Acceptance Criteria
 
-1. WHEN a supporter logs into their dashboard, THE Supporter_Profile SHALL display engagement data using existing person-schema-1-1-4 and donation-schema structures
-2. WHEN displaying supporter information, THE Supporter_Profile SHALL respect existing data fields including FirstName, Gender, Country, and IsHighValueSupporter flags
-3. THE Supporter_Profile SHALL aggregate donation history using DonationType, Amount, ReceivedDate, and PaymentStatus from the donation-schema
-4. WHEN showing fundraising activities, THE Supporter_Profile SHALL integrate FundraisingPageType, TargetAmount, and EventName from fundraising-page-schema
-5. THE Supporter_Profile SHALL maintain WCAG 2.1 AA accessibility standards with keyboard navigation support
+1. WHEN a user accesses the platform, THE Personalization_Engine SHALL display a login interface
+2. WHEN a user successfully authenticates, THE Personalization_Engine SHALL retrieve the User_Profile from the MCP_Server
+3. WHEN the User_Profile contains prior engagement context, THE Personalization_Engine SHALL display the Dashboard with personalized information
+4. WHEN the User_Profile contains only basic information (name, age, location), THE Personalization_Engine SHALL initiate a simplified Personalisation_Flow to gather additional context
+5. WHEN the User_Profile contains no prior context, THE Personalization_Engine SHALL initiate the new user Personalisation_Flow
+6. THE Personalization_Engine SHALL retrieve user attributes including donation history, event participation, and personal circumstances from the MCP_Server
 
-### Requirement 3: AI-Powered Supporter Journey Acceleration
+### Requirement 2: Dashboard Display for Returning Supporters
 
-**User Story:** As a supporter with unique motivations and capacity, I want AI to inspire me to take meaningful action by identifying my best next step, so that I can maximize my impact on CRUK's mission.
-
-#### Acceptance Criteria
-
-1. WHEN analyzing supporter behavior, THE Personalization_Engine SHALL predict optimal next actions (donate, volunteer, fundraise, campaign) based on engagement patterns
-2. THE system SHALL create tailored volunteer opportunities based on skills, location from County field, and FundraisingActivityLocation preferences
-3. THE Personalization_Engine SHALL predict supporter lifetime value using donation history and engagement patterns to prioritize outreach
-4. WHEN generating recommendations, THE system SHALL explain reasoning with clear statements like "Because you're interested in..." following CRUK's transparent communication principles
-5. THE system SHALL personalize communication without requiring complete data integration, demonstrating transformation programme benefits
-
-### Requirement 4: Intelligent Onboarding and Preference Management
-
-**User Story:** As a new or returning supporter, I want to customize my experience by sharing my interests and preferences through an intelligent onboarding flow, so that I receive relevant content and opportunities that match my values while contributing to CRUK's transformation goals.
+**User Story:** As a returning supporter, I want to see my engagement summary on the dashboard, so that I can understand my impact and current activities.
 
 #### Acceptance Criteria
 
-1. WHEN a supporter begins onboarding, THE Onboarding_Engine SHALL collect persona type, cancer interests, and communication preferences through a 3-5 step flow
-2. THE Onboarding_Engine SHALL generate insights about supporter preferences and journey patterns to inform transformation priorities
-3. THE Onboarding_Engine SHALL allow supporters to skip any step while maintaining core functionality
-4. WHEN onboarding is complete, THE system SHALL demonstrate personalized content preview showing transformation programme benefits
-5. THE Onboarding_Engine SHALL create synthetic datasets for testing personalization strategies safely during transformation
+1. WHEN the Dashboard is displayed, THE Personalization_Engine SHALL show the total amount raised for CRUK by the Supporter
+2. WHEN the Supporter has an active fundraising campaign, THE Personalization_Engine SHALL display the current campaign amount versus target
+3. WHEN the Dashboard is displayed, THE Personalization_Engine SHALL show an impact breakdown of what the Supporter's donations have funded
+4. WHEN the Dashboard is displayed, THE Personalization_Engine SHALL recommend CRUK pages based on the Supporter's activity history
+5. WHEN the Dashboard is displayed, THE Personalization_Engine SHALL display high-impact research papers from the database that are relevant to the Supporter
 
-### Requirement 5: Evidence-Based Donation Impact Tracking
+### Requirement 3: New User Personalization Flow
 
-**User Story:** As a donor, I want to see tangible outcomes from my contributions linked to CRUK's actual research achievements, so that I feel connected to the mission and motivated to continue supporting breakthrough discoveries like cisplatin, abiraterone, and tamoxifen.
-
-#### Acceptance Criteria
-
-1. WHEN a supporter makes a donation, THE Impact_Tracker SHALL map contributions to specific research outcomes using honest, evidence-based framing linked to CRUK's drug discovery history
-2. THE Impact_Tracker SHALL maintain donation streaks using ReceivedDate and Amount fields from donation-schema to track consecutive months with donations
-3. WHEN displaying impact stories, THE Impact_Tracker SHALL reference actual CRUK achievements including Nobel Prize winners and life-saving drug discoveries
-4. THE Impact_Tracker SHALL provide streak progress indicators with gentle encouragement using CRUK's empathetic tone of voice guidelines
-5. THE Impact_Tracker SHALL link all impact claims to verifiable CRUK research pages and publications
-
-### Requirement 6: Privacy-First Data Management and GDPR Compliance
-
-**User Story:** As a supporter sharing personal and potentially sensitive health information, I want transparent control over my data usage with clear consent mechanisms, so that I can trust CRUK with my information while supporting their mission.
+**User Story:** As a new user, I want to provide information about my relationship with CRUK, so that the platform can personalize my experience.
 
 #### Acceptance Criteria
 
-1. THE Consent_Manager SHALL provide granular consent options aligned with existing person-schema fields including DoNotContact and IsAnonymous flags
-2. WHEN collecting health-related preferences, THE Consent_Manager SHALL treat this as special category data requiring explicit consent under GDPR
-3. THE Consent_Manager SHALL allow supporters to view, modify, or withdraw consent at any time through their profile interface
-4. THE system SHALL maintain timestamped audit logs of all consent decisions using existing BatchId and metadata structures for compliance
-5. THE Supporter_Profile SHALL function with core features even when supporters decline advanced personalization consent
+1. WHEN a new user is detected, THE Personalization_Engine SHALL ask "Are you new to Cancer Research UK? What do you know about CRUK? Have you supported us in any way before?"
+2. WHEN the user provides personalization input, THE Personalization_Engine SHALL summarize the input and confirm accuracy with the user
+3. WHEN the user confirms accuracy, THE Personalization_Engine SHALL save the information in structured or semi-structured format with a timestamp
+4. WHEN personalization data is saved, THE Personalization_Engine SHALL use it as trusted information for future interactions
+5. THE Personalization_Engine SHALL record when the user updated personalization information with date and time stamps
 
-### Requirement 7: Conversational AI Support and Triage
+### Requirement 4: Intent Detection and Flow Management
 
-**User Story:** As someone navigating cancer or supporting CRUK's mission, I want empathetic, 24/7 conversational AI support that understands my emotional state, so that I can get help when I need it most while contributing to transformation insights.
-
-#### Acceptance Criteria
-
-1. THE system SHALL provide 24/7 conversational support for cancer information queries using CRUK's empathetic tone of voice guidelines
-2. WHEN a user expresses distress or emotional difficulty, THE system SHALL respond with empathy and signpost to appropriate counseling services
-3. THE system SHALL triage complex medical questions to appropriate CRUK specialists while maintaining conversation context
-4. WHEN processing supporter queries, THE system SHALL identify optimal engagement opportunities (volunteer, fundraise, campaign) based on conversation context
-5. THE system SHALL generate anonymized insights from conversations to inform transformation programme content strategy and supporter journey optimization
-
-### Requirement 8: Transformation Programme Analytics and Insights
-
-**User Story:** As a CRUK transformation team member, I want detailed analytics on supporter engagement patterns and AI-driven insights, so that I can optimize the platform and accelerate transformation programme priorities.
+**User Story:** As a user, I want the system to understand whether I'm seeking information or want personalized engagement, so that I receive the appropriate experience.
 
 #### Acceptance Criteria
 
-1. THE Engagement_Analytics SHALL track onboarding completion rates and preference selection patterns to identify transformation optimization opportunities
-2. THE system SHALL generate insights about content gaps and supporter needs using AI analysis of interaction patterns
-3. THE Engagement_Analytics SHALL monitor donation streak retention and impact story engagement to measure feature effectiveness for transformation planning
-4. THE system SHALL provide predictive analytics on supporter lifetime value trends using existing IsHighValueSupporter classifications
-5. THE system SHALL demonstrate proof-of-concept for unified experiences that inform transformation priorities and validate personalization assumptions
+1. WHEN a user inputs a query, THE Personalization_Engine SHALL detect whether the intent is information seeking or personalization
+2. WHEN Intent_Detection identifies information seeking intent, THE Personalization_Engine SHALL trigger the information seeking flow
+3. WHEN the information seeking flow completes, THE Personalization_Engine SHALL ask if it can resume the Personalisation_Flow
+4. WHEN a user indicates they want to stop the Personalisation_Flow, THE Personalization_Engine SHALL pause personalization and respect the user's choice
+5. THE Personalization_Engine SHALL record user intent for each interaction
 
-### Requirement 9: Scalable Integration Architecture
+### Requirement 5: Information Seeking Experience
 
-**User Story:** As a CRUK system administrator, I want the platform to integrate seamlessly with existing data schemas and handle high supporter volumes, so that we can serve the entire supporter community while informing transformation decisions.
-
-#### Acceptance Criteria
-
-1. THE system SHALL integrate with existing CRUK data schemas (person-schema-1-1-4, donation-schema, fundraising-page-schema) without modification
-2. THE Supporter_Profile SHALL load within 2 seconds using cached data from existing PublisherID sources (ACM, ECM, EWS, OFR, OPS)
-3. THE Impact_Tracker SHALL process donation data in real-time using existing DonationId and PaymentProviderTransactionId fields
-4. THE system SHALL handle at least 5,000 concurrent users while maintaining sub-second response times for personalized content
-5. THE platform SHALL implement comprehensive error handling and graceful degradation when external systems are unavailable
-
-### Requirement 10: Multi-Modal Accessibility and Content Quality
-
-**User Story:** As a person with diverse accessibility needs seeking cancer information, I want to interact with the system through multiple channels and receive accurate, evidence-based information, so that I can access support regardless of my abilities and trust the guidance I receive.
+**User Story:** As an information seeker, I want to find cancer-related information quickly from CRUK's published sources, so that I can get trusted answers without going through personalization.
 
 #### Acceptance Criteria
 
-1. THE system SHALL support text-based conversations through web and mobile interfaces with voice interaction capabilities for hands-free access
-2. WHEN visual content is presented, THE system SHALL provide alternative text descriptions for screen readers and offer content in multiple formats (text, audio, visual)
-3. THE system SHALL only surface content that has been medically reviewed and approved by CRUK experts with appropriate disclaimers about consulting healthcare professionals
-4. WHEN providing medical information, THE system SHALL flag potentially harmful queries and redirect to emergency services when appropriate
-5. THE system SHALL maintain content freshness by regularly updating its knowledge base with new CRUK publications and research findings
+1. WHEN a user requests cancer information, THE Personalization_Engine SHALL retrieve relevant links and articles exclusively from Cancer Research UK's published sources
+2. WHEN information is provided, THE Personalization_Engine SHALL validate with the user whether they have everything they need
+3. WHEN validation is complete, THE Personalization_Engine SHALL gather user sentiment in a few words of feedback
+4. WHEN feedback is collected, THE Personalization_Engine SHALL ask to resume the Personalisation_Flow
+5. THE Personalization_Engine SHALL record the information seeking request and user intent
+6. THE Personalization_Engine SHALL only return information from verified CRUK knowledge sources
 
-### Requirement 11: Cross-Platform Mobile Experience
+### Requirement 6: Motivational Content Delivery
 
-**User Story:** As a supporter accessing CRUK on mobile devices, I want a seamless experience across all platforms that maintains full functionality, so that I can engage with the organization anywhere while contributing to transformation insights.
+**User Story:** As a supporter, I want to see relevant information about CRUK's achievements, so that I feel motivated and inspired to continue supporting the charity.
 
 #### Acceptance Criteria
 
-1. THE system SHALL provide responsive design that adapts to mobile, tablet, and desktop screen sizes while maintaining schema integration
-2. THE Onboarding_Engine SHALL optimize form interactions for touch interfaces with appropriate input validation for existing schema fields
-3. THE Impact_Tracker SHALL display donation streaks and research impact stories in mobile-friendly formats with easy navigation
-4. THE system SHALL maintain full functionality across iOS Safari, Android Chrome, and desktop browsers with consistent data synchronization
-5. THE platform SHALL support offline viewing of previously loaded profile data and impact stories while queuing updates for when connectivity returns
+1. WHEN the Personalisation_Flow reaches the motivation stage, THE Personalization_Engine SHALL produce relevant information about CRUK's achievements
+2. WHEN motivational content is displayed, THE Personalization_Engine SHALL tailor the content based on the User_Context
+3. THE Personalization_Engine SHALL retrieve high-impact research papers from the MCP_Server that are relevant to the Supporter's interests
+4. THE Personalization_Engine SHALL present achievement information in an inspiring and accessible format
+
+### Requirement 7: Call to Action Generation
+
+**User Story:** As a supporter, I want to receive personalized recommendations for how to support CRUK, so that I can take meaningful action aligned with my capacity and interests.
+
+#### Acceptance Criteria
+
+1. WHEN the Personalisation_Flow reaches the final stage, THE Personalization_Engine SHALL present a Call_To_Action
+2. WHEN generating a Call_To_Action, THE Personalization_Engine SHALL recommend donation amounts based on previous behavior
+3. WHEN the Supporter has capacity for regular giving, THE Personalization_Engine SHALL present "become a regular giver" as a Call_To_Action
+4. THE Personalization_Engine SHALL tailor the Call_To_Action based on User_Context including skills, location, and interests
+
+### Requirement 8: MCP Server Integration
+
+**User Story:** As the system, I want to access real-time data from multiple sources, so that I can provide accurate and current information to users.
+
+#### Acceptance Criteria
+
+1. THE Personalization_Engine SHALL call the MCP_Server to retrieve User_Profile data for authenticated users
+2. THE Personalization_Engine SHALL call the MCP_Server to validate recent transactions in real-time
+3. THE Personalization_Engine SHALL call the MCP_Server to retrieve recently published research papers
+4. THE Personalization_Engine SHALL call the MCP_Server to access the list of pages the user has visited
+5. WHEN MCP_Server calls fail, THE Personalization_Engine SHALL handle errors gracefully and inform the user
+
+### Requirement 9: Data Persistence and Context Management
+
+**User Story:** As the system, I want to maintain user context across sessions, so that I can provide consistent personalized experiences.
+
+#### Acceptance Criteria
+
+1. WHEN a user provides new personalization input, THE Personalization_Engine SHALL save it with a timestamp
+2. WHEN user context is updated, THE Personalization_Engine SHALL store it in structured or semi-structured format
+3. WHEN retrieving user context, THE Personalization_Engine SHALL use the most recent trusted information
+4. THE Personalization_Engine SHALL maintain a history of user interactions including intent and sentiment
+5. THE Personalization_Engine SHALL persist user context across sessions
+
+### Requirement 10: Frontend Personalization Container
+
+**User Story:** As a supporter, I want to see a personalized container on the landing page, so that I can quickly access relevant information and actions.
+
+#### Acceptance Criteria
+
+1. WHEN the landing page loads for an authenticated Supporter, THE Personalization_Engine SHALL display a personalization container with the user's name
+2. WHEN the personalization container is displayed, THE Personalization_Engine SHALL show a total donations bar
+3. WHEN the personalization container is displayed, THE Personalization_Engine SHALL show recommended donation buttons with amounts based on previous behavior
+4. WHEN the personalization container is displayed, THE Personalization_Engine SHALL show an impact breakdown of what donations have funded
+5. WHEN the personalization container is displayed, THE Personalization_Engine SHALL show recommended CRUK pages based on activity
+
+### Requirement 11: Missing Data Handling
+
+**User Story:** As a user with incomplete profile data, I want to be prompted for missing information, so that the system can provide better personalization.
+
+#### Acceptance Criteria
+
+1. WHEN User_Profile data is missing, THE Personalization_Engine SHALL display a container with appropriate questions for the missing data
+2. WHEN prompting for missing data, THE Personalization_Engine SHALL include age and gender fields where applicable
+3. WHEN the missing data container is displayed, THE Personalization_Engine SHALL provide a free text search bar with the prompt "what are you looking for today"
+4. THE Personalization_Engine SHALL not require users to provide missing data before accessing other features
+
+### Requirement 12: Search Functionality
+
+**User Story:** As a user, I want to search for information at any time, so that I can quickly find what I need from CRUK's published sources regardless of my personalization status.
+
+#### Acceptance Criteria
+
+1. THE Personalization_Engine SHALL always display a free text search bar with the prompt "what are you looking for today"
+2. WHEN a user enters a search query, THE Personalization_Engine SHALL process the query and return relevant results from Cancer Research UK's published sources
+3. WHEN search results are displayed, THE Personalization_Engine SHALL provide links to relevant CRUK pages and articles
+4. THE Personalization_Engine SHALL record search queries as part of User_Context
+5. THE Personalization_Engine SHALL only return search results from verified CRUK knowledge sources
+
+### Requirement 13: Security and Compliance
+
+**User Story:** As a data protection officer, I want the system to comply with GDPR and financial regulations, so that user data is protected and the organization remains compliant.
+
+#### Acceptance Criteria
+
+1. THE Personalization_Engine SHALL ensure appropriate consent is in place before processing special category personal data
+2. THE Personalization_Engine SHALL encrypt sensitive user data at rest and in transit
+3. WHEN handling financial transactions, THE Personalization_Engine SHALL comply with relevant financial compliance frameworks
+4. THE Personalization_Engine SHALL provide mechanisms for users to access, modify, and delete their personal data
+5. THE Personalization_Engine SHALL log all data access and modifications for audit purposes
+
+### Requirement 14: Performance and Cost Optimization
+
+**User Story:** As a system administrator, I want the platform to operate with low cost and low latency, so that we can provide the best value for our supporters.
+
+#### Acceptance Criteria
+
+1. THE Personalization_Engine SHALL respond to user queries within 2 seconds under normal load
+2. THE Personalization_Engine SHALL optimize AI model calls to minimize cost per interaction
+3. THE Personalization_Engine SHALL cache frequently accessed data to reduce MCP_Server calls
+4. THE Personalization_Engine SHALL use cost-effective AI models that balance performance and expense
+5. WHEN system load is high, THE Personalization_Engine SHALL maintain acceptable response times through efficient resource management
