@@ -11,40 +11,6 @@ Cancer Research UK exists to beat cancer. For the past 120 years, we’ve been m
 - Treatments are more effective, kinder and more targeted, so people can lead better, more fulfilling lives
 - Everyone shares in this progress equally, regardless of who they are, where they’re from or what type of cancer they have
 
-To meet this challenge, Cancer Research UK is undertaking the **Engage Transformation Programme**, the largest and most complex data and digital transformation in the sector. The programme will change the way the organisation collects and manages data so that the organisation can shift to becoming more audience centric.
-
-The programme aims to enable Cancer Research UK to deliver more personalised experiences that are better tailored to their needs and interests. If we improve the experiences people have when they use Cancer Research UK’s information or support our work, there is a stronger likelihood those individuals will continue to support the organisation for years to come. This will mean Cancer Research UK can increase its impact, whether that’s through how we support people going through cancer, committing more money to research or through its political influencing.
-
----
-
-## The Challenge
-
-Cancer Research UK is undergoing the sector's largest data and digital transformation to become truly audience-centric. But transformation takes time—and cancer doesn't wait.
-
-> **How can AI deliver personalised, accessible cancer information and supporter experiences today, while accelerating the benefits of the Engage Transformation Programme?**
-
----
-
-## Background
-
-Cancer Research UK's Transformation Programme aims to revolutionise how the charity collects and manages data, enabling:
-
-- Personalised experiences tailored to individual needs and interests
-- Increased engagement across information services, campaigning, volunteering, donations, and fundraising
-- Greater impact in supporting people through cancer, funding research, and political influence
-
-The charity is aiming towards a game-changing, unified cancer care platform integrated with supporter experiences. The platform might proactively anticipate patient and caregiver needs based on diagnosis and treatment stage and integrate other support services, such as Nurse Helpline and Cancer Chat, in one place. The platform could present a personalised, logged-in experience across events, fundraising, donations, volunteering, campaigning, shop and cancer information resources and could leverage existing supporter data to deliver intelligent recommendations, such as event signup leading to merchandise suggestions and forum content. This would transform fragmented, anonymous interactions into a connected, anticipatory support ecosystem that maximises engagement throughout the entire cancer care journey.
-
-**The opportunity:** While full transformation may be 1-2 years away, AI can bridge the gap—delivering immediate value while informing and accelerating the longer-term vision.
-
----
-
-## Hackathon Focus Areas
-
-Participants can tackle one or more of these challenge streams:
-
-### 1. Intelligent Information Access
-
 People facing cancer need the right information at the right time, but everyone's journey is different. How can AI:
 
 - Deliver relevant, personalised cancer information based on diagnosis, treatment stage or personal circumstances whilst ensuring appropriate consent is in place to process actual or inferred special category personal data
@@ -86,48 +52,90 @@ Personal, empathetic interaction matters when someone is navigating cancer. How 
 
 ## Deliverables
 
-Teams can present:
-
-- A working prototype or detailed demo (even if using sample data)
-- A brief on the problem solved, approach taken, and impact potential
-- An implementation roadmap showing quick wins and longer-term integration with the transformation programme
-- Consideration of ethical implications, especially around sensitive health data
-
+- A working prototype
 ---
 
 ## What Success Looks Like
 
-The winning solutions will demonstrate how AI can deliver immediate value to people affected by cancer and CRUK supporters, while generating insights and capabilities that accelerate the transformation journey. We're looking for ideas that are both pragmatic enough to deploy soon and visionary enough to shape the future of how cancer charities serve their communities.
+
 
 ---
 
-## Shape
+Further context: Big AI companies are building a really clear understanding of users through every day interactions with generative AI applications (like chat gpt). Charities have a vested interest in responsibily understanding our users and supporting them in order to inspire them to deepen their support for us (maximise supporter value)
+## Propsal - What we want to build - what we refined
 
-Because cancer affects 1 in 2 people, we can't afford to wait for transformation to be complete. Let's use AI to make a difference today.
+An MVP experience that rethinks our digital front door (our main site: https://www.cancerresearchuk.org/)
+
+The LLM is responsible for initially triggering the personalisation journey. If it detects the user's intent is to seek information it triggers that flow. It asks if it can resume the personalisation flow. If the user inputs their intent is to stop the personalisation flow (), the LLM should also understand this.
+
+PERSONALISATION: User Journey MVP
+1) Journey begins with user access site. User logs in. 
+The personalisation engine will access that user's database/attributes including any previous contextual information (e.g. have they run for CRUK, attended our events, are they a researcher/journalist/philanthropist/affected by cancer personally or a loved one).
+If the personalisation engine has prior context it presents both Dashboard-like information including:
+
+* "Total amount raised for CRUK"
+* "Current fundraising campaign amount vs target"
+
+1b -personalisation flow If the personalisation engine has no prior context it asks the user "Are you new to Cancer Research UK? What do you know about CRUK? Have you supported us in any way before?" This then goes through the user new personalisation flow (see flow below)
+
+2) The next step is the personalisation engine produces relevant information about the charity and its achievements to motivate and inspire the user
+
+3) The final personalisation experience is a call to action. "A straightforward way to support us is to become a regular giver"
+
+
+INFORMATION SEEKING EXPERIENCE:
+The user might say that they want to find information About Cancer. They can use the interface to retrieve basic links and articles. The app doesn't need to create a summary. The LLM should validate with the user whether they have everything they need, gather user sentiment in a few words of feedback and ask to resume the personalisation journey (either the 1b flow or )
+
+
+
+Background Data Context - 
+
+User Identity: - 
+User Profile: -
+User New input:
+* User passes new personalisation (initial input)
+* system summarises and confirms accuracy with user ()
+* system saves it in structured or semi-structured format that records when the user updated that information (date/time stamp)
+* system can now use that as trusted information and does not retrieve the initial user input
+Information Seeking Experience input:
+* User's passes information seeking request
+* User's intent is recorded
+User sentiment request:
+
+Existing structured information (knowledge and tools):
+* an MCP server/API that can call a database associated with a given user and return values for given fields
+* an MCP server/API that can call a database in real-time to find out about most recent transactions (to validate a user has just donated)
+* list of pages the user has visited
+* an MCP server/API that call call a database of some research papers we have recently published
+* TBC ---- others available in github repository
+
+
 
 ---
 
-## Appendix: Impact
+NFR
+We think that in order to do this, we will want MCP servers and an agentic architecture.
+We believe that a low-cost, low latency solution will be the best value for our supporters
+The solution needs to be secure and compliant with relevant regulatiosn including GDPR and financial compliance frameworks.
+---
 
-From Wikipedia: Note that whilst these are drugs we are directly responsible for, there will be countless other foundational research publications we have funded (e.g. characterising the shape of a protein or identifying potential targets/mechanisms) that are not in this list!
+We plan to integrate this with a front end - this does not need to be built in detail but can be used to demonstrate how the solution might work
 
-### Drugs developed by CRUK’s scientists include:
-
-- **Cisplatin** and **carboplatin**: cytotoxic chemotherapy drugs discovered at the Institute of Cancer Research in London
-- **Abiraterone**: a prostate cancer drug discovered at the Institute of Cancer Research in London
-- **Temozolomide**: has an effect on glioblastoma, discovered by CRUK scientists at the University of Aston
-- **Rucaparib**: a PARP inhibitor drug discovered by CRUK scientists including Ruth Plummer at the Northern Institute for Cancer Research
-- **Tamoxifen**: a hormone therapy used to treat breast cancer and lower the risk of recurrence
-
-### Several of the organisation's scientists have won major prizes, including:
-
-- **Tomas Lindahl**: one of three recipients of the 2015 Nobel Prize in Chemistry, for mechanistic studies of DNA repair; joined the organisation as a researcher in 1981, and from 1986 was the first Director of their Clare Hall research institute in Hertfordshire, since 2015 part of the Francis Crick Institute
-- **Paul Nurse** and **Tim Hunt**: recipients of the 2001 Nobel Prize in Physiology or Medicine, for work started at the London Research Institute
-- **Renato Dulbecco**: recipient of the 1975 Nobel Prize in Physiology or Medicine, while deputy director of what was then the Imperial Cancer Research Fund
-Cisplatin and carboplatin, cytotoxic chemotherapy drugs discovered at the Institute of Cancer Research in London.  
-
-
-
-Abiraterone, a prostate cancer drug discovered at the Institute of Cancer Research in London.  
-
-
+Font end requirements: 
+ 
+Personalisation container on landing page: 
+Name 
+Total donations bar 
+Recommended 'click to donate' buttons with amounts based on previous behaviour 
+Impact breakdown showing what specifically their previous donations have funded I.e. test tubes  
+Recommended CRUK pages based on activity
+Pull high impact/prestigiously published research papers from our database (e.g. paper published in Nature funded by CRUK)
+ 
+If data missing, container with: 
+Appropriate question for missing data 
+Free text search bar with prompt 'what are you looking for today' 
+ 
+For scope 1 data is (subject to change): 
+Age 
+Gender 
+Always free text search bar with prompt 'what are you looking for today' 
