@@ -76,7 +76,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       const randomUser = SEEDED_USERS[Math.floor(Math.random() * SEEDED_USERS.length)];
       setCurrentUser(randomUser);
       
-      // Call the personalization agent API
+      // Call the personalization agent API with a query that encourages donation recommendations
       const response = await fetch(`${API_URL}agent`, {
         method: 'POST',
         headers: {
@@ -85,7 +85,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         body: JSON.stringify({
           userId: randomUser,
           input: {
-            text: 'Show me personalized content and recommendations',
+            text: 'I want to support cancer research. What would you recommend?',
             timestamp: new Date().toISOString()
           },
           sessionId: `session-${Date.now()}`
@@ -103,8 +103,11 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         setSuggestedLinks(data.suggestedLinks);
       }
       
-      // Extract donation widget from call to action
+      // Extract donation widget from call to action or dashboard
+      let foundDonationWidget = false;
+      
       if (data.uiComponents && data.uiComponents.length > 0) {
+        // Look for call_to_action component first
         const ctaComponent = data.uiComponents.find((c: any) => c.type === 'call_to_action');
         if (ctaComponent && ctaComponent.data) {
           setDonationWidget({
@@ -113,7 +116,41 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
             suggestedAmounts: ctaComponent.data.suggestedAmounts || [10, 25, 50, 100],
             actionUrl: ctaComponent.data.actionUrl || 'https://www.cancerresearchuk.org/donate'
           });
+          foundDonationWidget = true;
         }
+        
+        // If no CTA, check dashboard for donation info
+        if (!foundDonationWidget) {
+          const dashboardComponent = data.uiComponents.find((c: any) => c.type === 'dashboard');
+          if (dashboardComponent && dashboardComponent.data) {
+            // Create donation widget based on user's total donations
+            const totalDonations = dashboardComponent.data.totalDonations || 0;
+            const avgAmount = totalDonations > 0 ? Math.ceil(totalDonations / 3) : 25;
+            
+            setDonationWidget({
+              title: 'Continue Your Impact',
+              description: 'Your donations fund vital cancer research and support services. Every pound brings us closer to beating cancer sooner.',
+              suggestedAmounts: [
+                Math.max(10, Math.ceil(avgAmount * 0.8)),
+                Math.max(25, Math.ceil(avgAmount * 1.2)),
+                Math.max(50, Math.ceil(avgAmount * 1.5)),
+                Math.max(100, Math.ceil(avgAmount * 2))
+              ],
+              actionUrl: 'https://www.cancerresearchuk.org/donate'
+            });
+            foundDonationWidget = true;
+          }
+        }
+      }
+      
+      // If still no donation widget, create a default one
+      if (!foundDonationWidget) {
+        setDonationWidget({
+          title: 'Support Cancer Research',
+          description: 'Your donation helps fund vital cancer research and support services. Every pound brings us closer to beating cancer sooner.',
+          suggestedAmounts: [10, 25, 50, 100],
+          actionUrl: 'https://www.cancerresearchuk.org/donate'
+        });
       }
       
       // Update content with AI-generated text
@@ -147,6 +184,14 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     } catch (err) {
       console.error('Error generating content:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate content');
+      
+      // Set default donation widget on error
+      setDonationWidget({
+        title: 'Support Cancer Research',
+        description: 'Your donation helps fund vital cancer research and support services.',
+        suggestedAmounts: [10, 25, 50, 100],
+        actionUrl: 'https://www.cancerresearchuk.org/donate'
+      });
       
       // Fallback to mock generation
       setContent(prev => {
