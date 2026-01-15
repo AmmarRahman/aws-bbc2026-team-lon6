@@ -12,13 +12,13 @@ import { searchResearchPapers } from './data-access';
 
 // Environment variables
 const AWS_REGION = process.env.AWS_REGION || 'us-west-2';
-const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-sonnet-4-5-20250929-v1:0';
+const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-5-sonnet-20240620-v1:0';
 
 /**
  * Content Generation Service
  * 
  * Generates personalized content including motivational messages and calls to action.
- * Uses Amazon Bedrock with Claude Sonnet 4.5 for content generation.
+ * Uses Amazon Bedrock with Claude 3.5 Sonnet for content generation.
  * 
  * Requirements: 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3, 7.4
  */
@@ -301,7 +301,7 @@ Respond ONLY with valid JSON, no additional text.`;
    */
   private async invokeBedrockModel(prompt: string): Promise<string> {
     const payload = {
-      anthropic_version: 'bedrock-2025-02-19',
+      anthropic_version: 'bedrock-2023-05-31',
       max_tokens: 2000,
       temperature: 0.7, // Higher temperature for creative content
       messages: [

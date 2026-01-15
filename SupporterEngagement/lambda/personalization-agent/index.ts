@@ -37,6 +37,7 @@ const SESSION_TABLE_NAME = process.env.SESSION_TABLE_NAME || 'SupporterEngagemen
  * Implements conversation state machine and flow routing.
  * 
  * Requirements: 1.2, 1.3, 1.4, 4.1, 4.2, 4.3, 4.4
+ * Version: 1.0.1 - Fixed DynamoDB Date marshalling
  */
 export class PersonalizationAgent {
   private intentDetectionService: IntentDetectionService;
@@ -77,8 +78,12 @@ export class PersonalizationAgent {
    */
   async processInput(userId: string, input: UserInput, sessionId: string): Promise<AgentResponse> {
     try {
+      console.log(`Processing input for user ${userId}, session ${sessionId}`);
+      console.log(`Input text: ${input.text}`);
+      
       // Get or create session context
       let session = await this.getOrCreateSession(userId, sessionId);
+      console.log('Session retrieved/created');
       
       // Add user message to conversation history
       session.messages.push({
@@ -89,13 +94,17 @@ export class PersonalizationAgent {
       });
       
       // Get user context
+      console.log('Getting user context...');
       const userContext = await this.contextManagementService.getContext(userId);
+      console.log('User context retrieved');
       
       // Detect intent
+      console.log('Detecting intent...');
       const intentResult = await this.intentDetectionService.detectIntent(
         input.text,
         userContext
       );
+      console.log(`Intent detected: ${intentResult.primaryIntent}`);
       
       // Route to appropriate flow based on intent and current state
       let response: AgentResponse;
@@ -148,13 +157,16 @@ export class PersonalizationAgent {
       session.lastActivityTime = new Date();
       await saveSessionContextToDb(sessionId, session, this.sessionTableName);
       
+      console.log('Response generated successfully');
       return response;
     } catch (error) {
       console.error('Error processing input:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      console.error('Error details:', JSON.stringify(error, null, 2));
       
-      // Return error response
+      // Return error response with more details
       return {
-        text: 'I apologize, but I encountered an error processing your request. Please try again.',
+        text: `I apologize, but I encountered an error processing your request. Error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
         requiresUserInput: true,
         nextAction: 'retry'
       };
@@ -928,12 +940,16 @@ export class PersonalizationAgent {
       // Generate personalized welcome message
       const welcomeMessage = this.generateWelcomeMessage(profile, donationSummary, currentCampaign);
       
+      // Generate suggested links
+      const suggestedLinks = this.generateSuggestedLinks(userContext);
+      
       const response: AgentResponse = {
         text: welcomeMessage,
         uiComponents: [{
           type: 'dashboard',
           data: dashboardData
         }],
+        suggestedLinks,
         requiresUserInput: false,
         nextAction: 'dashboard_displayed'
       };
@@ -1123,12 +1139,16 @@ export class PersonalizationAgent {
       featuredResearch: []
     };
     
+    // Generate suggested links
+    const suggestedLinks = this.generateSuggestedLinks(userContext);
+    
     return {
       text: `Welcome back, ${profile.name}! Here's your personalized dashboard.`,
       uiComponents: [{
         type: 'dashboard',
         data: dashboardData
       }],
+      suggestedLinks,
       requiresUserInput: false,
       nextAction: 'dashboard_displayed'
     };
@@ -1587,6 +1607,88 @@ Respond ONLY with the bulleted summary, no additional text.`;
     const random = Math.random().toString(36).substring(2, 15);
     return `${userId}-${timestamp}-${random}`;
   }
+
+  /**
+   * Generate suggested links based on user context
+   * Returns 3 relevant links from cancerresearchuk.org
+   */
+  private generateSuggestedLinks(userContext: UserContext): { title: string; url: string; description: string }[] {
+    const profile = userContext.profile;
+    const links: { title: string; url: string; description: string }[] = [];
+    
+    // Link 1: Based on cancer type or general research
+    if (profile.cancerType) {
+      const cancerTypeSlug = profile.cancerType.toLowerCase().replace(/\s+/g, '-');
+      links.push({
+        title: `${profile.cancerType} Research`,
+        url: `https://www.cancerresearchuk.org/about-cancer/${cancerTypeSlug}`,
+        description: `Learn about the latest ${profile.cancerType.toLowerCase()} research and treatment advances`
+      });
+    } else {
+      links.push({
+        title: 'Our Research',
+        url: 'https://www.cancerresearchuk.org/our-research',
+        description: 'Discover how we\'re working to beat cancer through world-class research'
+      });
+    }
+    
+    // Link 2: Based on engagement history
+    if (profile.hasFundraised) {
+      links.push({
+        title: 'Fundraising Ideas',
+        url: 'https://www.cancerresearchuk.org/get-involved/find-an-event',
+        description: 'Find new fundraising events and ideas to support cancer research'
+      });
+    } else if (profile.hasVolunteered) {
+      links.push({
+        title: 'Volunteer Opportunities',
+        url: 'https://www.cancerresearchuk.org/get-involved/volunteer',
+        description: 'Explore ways to volunteer and make a difference in your community'
+      });
+    } else if (profile.donationCount > 0) {
+      links.push({
+        title: 'Your Impact',
+        url: 'https://www.cancerresearchuk.org/about-us/our-impact',
+        description: 'See how donations like yours are helping us beat cancer sooner'
+      });
+    } else {
+      links.push({
+        title: 'Ways to Give',
+        url: 'https://www.cancerresearchuk.org/get-involved/donate',
+        description: 'Explore different ways you can support life-saving cancer research'
+      });
+    }
+    
+    // Link 3: Based on interests or general support
+    const interests = userContext.preferences.interests;
+    if (interests.includes('Race for Life') || interests.includes('running') || interests.includes('events')) {
+      links.push({
+        title: 'Race for Life',
+        url: 'https://www.cancerresearchuk.org/get-involved/find-an-event/race-for-life-events',
+        description: 'Join thousands in our iconic Race for Life events across the UK'
+      });
+    } else if (interests.includes('research') || profile.isResearcher) {
+      links.push({
+        title: 'Research Breakthroughs',
+        url: 'https://www.cancerresearchuk.org/about-us/cancer-news',
+        description: 'Read about the latest breakthroughs in cancer research and treatment'
+      });
+    } else if (profile.personallyAffected || profile.lovedOneAffected) {
+      links.push({
+        title: 'Cancer Support',
+        url: 'https://www.cancerresearchuk.org/about-cancer/coping',
+        description: 'Find support and information for people affected by cancer'
+      });
+    } else {
+      links.push({
+        title: 'Get Involved',
+        url: 'https://www.cancerresearchuk.org/get-involved',
+        description: 'Discover all the ways you can help us beat cancer'
+      });
+    }
+    
+    return links;
+  }
 }
 
 // Export singleton instance
@@ -1595,11 +1697,27 @@ export const personalizationAgent = new PersonalizationAgent();
 // Export handler for Lambda invocation
 export const handler = async (event: any): Promise<any> => {
   try {
-    const { userId, input, sessionId } = event;
+    console.log('Received event:', JSON.stringify(event, null, 2));
+    
+    // Parse body if it's from API Gateway
+    let requestBody;
+    if (event.body) {
+      // API Gateway event
+      requestBody = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+    } else {
+      // Direct invocation
+      requestBody = event;
+    }
+    
+    const { userId, input, sessionId } = requestBody;
     
     if (!userId) {
       return {
         statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
           error: 'userId is required'
         })
@@ -1609,6 +1727,10 @@ export const handler = async (event: any): Promise<any> => {
     if (!input) {
       return {
         statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
           error: 'input is required'
         })
@@ -1621,6 +1743,10 @@ export const handler = async (event: any): Promise<any> => {
       
       return {
         statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
           sessionId: session.sessionId,
           message: 'Session initialized'
@@ -1633,16 +1759,27 @@ export const handler = async (event: any): Promise<any> => {
     
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify(response)
     };
   } catch (error) {
     console.error('Error in personalization agent handler:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('Error details:', JSON.stringify(error, null, 2));
     
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : String(error)) : undefined
       })
     };
   }

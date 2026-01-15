@@ -2,9 +2,18 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, QueryCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { UserProfile, Donation, UserContext, ContextVersion, SessionContext } from './types';
 
-// Initialize DynamoDB client
+// Initialize DynamoDB client with proper marshalling options
 const client = new DynamoDBClient({});
-export const docClient = DynamoDBDocumentClient.from(client);
+export const docClient = DynamoDBDocumentClient.from(client, {
+  marshallOptions: {
+    convertClassInstanceToMap: true, // Convert Date objects to ISO strings
+    removeUndefinedValues: true,
+    convertEmptyValues: false
+  },
+  unmarshallOptions: {
+    wrapNumbers: false
+  }
+});
 
 /**
  * Convert DynamoDB item date strings to Date objects
@@ -133,7 +142,7 @@ export async function saveUserContextToDb(
       ...context,
       userId,
       version,
-      lastUpdated: timestamp.toISOString()
+      lastUpdated: timestamp
     };
     
     await docClient.send(new PutCommand({
@@ -141,10 +150,7 @@ export async function saveUserContextToDb(
       Item: contextToSave
     }));
     
-    return {
-      ...contextToSave,
-      lastUpdated: timestamp
-    };
+    return contextToSave;
   } catch (error) {
     console.error('Error saving user context:', error);
     throw error;
@@ -230,13 +236,7 @@ export async function saveSessionContextToDb(
   try {
     const sessionToSave = {
       ...session,
-      sessionId,
-      startTime: session.startTime.toISOString(),
-      lastActivityTime: session.lastActivityTime.toISOString(),
-      messages: session.messages.map(msg => ({
-        ...msg,
-        timestamp: msg.timestamp.toISOString()
-      }))
+      sessionId
     };
     
     await docClient.send(new PutCommand({

@@ -4,7 +4,7 @@
   "description": "Personalization Agent Lambda function for Supporter Engagement Platform",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r ../shared dist/ && cp -r ../intent-detection dist/ && cp -r ../context-management dist/ && cp -r node_modules dist/",
     "clean": "rm -rf dist"
   },
   "dependencies": {

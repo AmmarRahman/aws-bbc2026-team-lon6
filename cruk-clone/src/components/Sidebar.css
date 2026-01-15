@@ -97,3 +97,49 @@
   color: #333;
   word-break: break-word;
 }
+
+.btn-generate:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.suggested-links {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.suggested-links h3 {
+  color: #2e008b;
+  font-size: 16px;
+  margin: 0 0 15px 0;
+}
+
+.suggested-link-item {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  border-left: 3px solid #ec008c;
+}
+
+.suggested-link-title {
+  color: #2e008b;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.suggested-link-title:hover {
+  color: #ec008c;
+  text-decoration: underline;
+}
+
+.suggested-link-description {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}

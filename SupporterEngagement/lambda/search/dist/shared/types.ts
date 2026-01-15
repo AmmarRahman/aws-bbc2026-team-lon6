@@ -186,8 +186,15 @@ export interface EngagementRecord {
 export interface AgentResponse {
   text: string;
   uiComponents?: UIComponent[];
+  suggestedLinks?: SuggestedLink[];
   nextAction?: string;
   requiresUserInput: boolean;
+}
+
+export interface SuggestedLink {
+  title: string;
+  url: string;
+  description: string;
 }
 
 export interface UIComponent {

@@ -97,7 +97,7 @@ export class SupporterEngagementStack extends cdk.Stack {
       SESSION_TABLE_NAME: sessionTable.tableName,
       INTERACTION_TABLE_NAME: interactionTable.tableName,
       BEDROCK_REGION: this.region,
-      BEDROCK_MODEL_ID: 'anthropic.claude-3-5-sonnet-20241022-v2:0'
+      BEDROCK_MODEL_ID: 'anthropic.claude-3-5-sonnet-20240620-v1:0'
     };
 
     // IAM Role for Lambda functions with Bedrock access
@@ -116,6 +116,16 @@ export class SupporterEngagementStack extends cdk.Stack {
         'bedrock:InvokeModelWithResponseStream'
       ],
       resources: [`arn:aws:bedrock:${this.region}::foundation-model/*`]
+    }));
+
+    // Grant AWS Marketplace permissions for Claude 4.5
+    lambdaRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'aws-marketplace:ViewSubscriptions',
+        'aws-marketplace:Subscribe'
+      ],
+      resources: ['*']
     }));
 
     // Grant DynamoDB access

@@ -4,6 +4,19 @@
 
 echo "Building Lambda functions..."
 
+# Build shared services first
+echo "Building intent-detection..."
+cd lambda/intent-detection
+npm install
+npm run build
+cd ../..
+
+echo "Building context-management..."
+cd lambda/context-management
+npm install
+npm run build
+cd ../..
+
 # Build get-user-profile
 echo "Building get-user-profile..."
 cd lambda/get-user-profile
